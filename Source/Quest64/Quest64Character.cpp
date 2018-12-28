@@ -14,11 +14,14 @@
 AQuest64Character::AQuest64Character()
 {
 	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	if (UCapsuleComponent* pCapsuleComponent = GetCapsuleComponent())
+	{
+		pCapsuleComponent->InitCapsuleSize(42.0f, 96.0f);
+	}
 
 	// set our turn rates for input
-	BaseTurnRate = 45.f;
-	BaseLookUpRate = 45.f;
+	m_fBaseTurnRate = 45.f;
+	m_fBaseLookUpAtRate = 45.f;
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -26,24 +29,29 @@ AQuest64Character::AQuest64Character()
 	bUseControllerRotationRoll = false;
 
 	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
-	GetCharacterMovement()->JumpZVelocity = 600.f;
-	GetCharacterMovement()->AirControl = 0.2f;
+	if (UCharacterMovementComponent* pCharacterMover = GetCharacterMovement())
+	{
+		pCharacterMover->bOrientRotationToMovement = true; // Character moves in the direction of input...	
+		pCharacterMover->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
+		pCharacterMover->JumpZVelocity = 600.f;
+		pCharacterMover->AirControl = 0.2f;
+	}
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
-	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
-
-	// Create a follow camera
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+	m_pSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	if(m_pSpringArm)
+	{
+		m_pSpringArm->SetupAttachment(RootComponent);
+		m_pSpringArm->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
+		m_pSpringArm->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+		// Create a follow camera
+		m_pCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonCamera"));
+		if(m_pCamera)
+		{
+			m_pCamera->SetupAttachment(m_pSpringArm, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+			m_pCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -67,14 +75,18 @@ void AQuest64Character::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 void AQuest64Character::TurnAtRate(float Rate)
 {
-	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	if (const UWorld* pWorld = GetWorld())
+	{
+		AddControllerYawInput(Rate * m_fBaseTurnRate * pWorld->GetDeltaSeconds());
+	}
 }
 
 void AQuest64Character::LookUpAtRate(float Rate)
 {
-	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	if (const UWorld* pWorld = GetWorld())
+	{
+		AddControllerPitchInput(Rate * m_fBaseLookUpAtRate * pWorld->GetDeltaSeconds());
+	}
 }
 
 void AQuest64Character::MoveForward(float Value)

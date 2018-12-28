@@ -11,26 +11,28 @@ class AQuest64Character : public ACharacter
 {
 	GENERATED_BODY()
 
+	// PRIVATE PROPERTIES
 private:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
+	class USpringArmComponent* m_pSpringArm;
 
-	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
+	class UCameraComponent* m_pCamera;
+
+	// PUBLIC PROPERTIES
 public:
-	AQuest64Character();
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseTurnRate;
+	float m_fBaseTurnRate;
 
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseLookUpRate;
+	float m_fBaseLookUpAtRate;
 
-protected:
+	// PRIVATE FUNCTIONS
+private:
 
 	void MoveForward(float Value);
 
@@ -40,14 +42,19 @@ protected:
 
 	void LookUpAtRate(float Rate);
 
-protected:
+	// PUBLIC FUNCTIONS
+public:
+	AQuest64Character();
 
+	// VIRTUALS
+protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// GETTERS & SETTERS
 public:
 	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE class USpringArmComponent* GetSpringArm() const { return m_pSpringArm; }
 	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE class UCameraComponent* GetCamera() const { return m_pCamera; }
 };
 
