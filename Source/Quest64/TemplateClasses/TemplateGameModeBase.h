@@ -4,16 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "Quest64GameMode.generated.h"
+#include "TemplateGameModeBase.generated.h"
 
-UCLASS(minimalapi)
-class AQuest64GameMode : public AGameModeBase
+/**
+ * 
+ */
+UCLASS()
+class QUEST64_API ATemplateGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-
-public:
-	AQuest64GameMode();
+	
 };
-
-
-

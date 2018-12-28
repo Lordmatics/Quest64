@@ -1,4 +1,4 @@
-// Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
+// Start 28/12/2018 - Niall Maple & Dane Maple
 
 #include "Quest64Character.h"
 #include "Camera/CameraComponent.h"
