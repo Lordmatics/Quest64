@@ -1,6 +1,7 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
 #include "Quest64Character.h"
+#include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -59,10 +60,36 @@ void AQuest64Character::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAxis("MoveForward", this, &AQuest64Character::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AQuest64Character::MoveRight);
 
+	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
+	// "turn" handles devices that provide an absolute delta, such as a mouse.
+	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("TurnRate", this, &AQuest64Character::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AQuest64Character::LookUpAtRate);
+
+	// handle touch devices
+	PlayerInputComponent->BindTouch(IE_Pressed, this, &AQuest64Character::TouchStarted);
+	PlayerInputComponent->BindTouch(IE_Released, this, &AQuest64Character::TouchStopped);
+
+	// VR headset functionality
+	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AQuest64Character::OnResetVR);
+}
+
+
+void AQuest64Character::OnResetVR()
+{
+	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
+}
+
+void AQuest64Character::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
+{
+		Jump();
+}
+
+void AQuest64Character::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
+{
+		StopJumping();
 }
 
 void AQuest64Character::TurnAtRate(float Rate)
