@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
+#include "Slate.h"
+
 class FToolBarBuilder;
 class FMenuBuilder;
 
@@ -26,6 +28,8 @@ private:
 
 	TSharedRef<class SDockTab> OnSpawnPluginTab(const class FSpawnTabArgs& SpawnTabArgs);
 
+	FReply LoadMap(const FString& mapName);
+	
 private:
 	TSharedPtr<class FUICommandList> PluginCommands;
 };
