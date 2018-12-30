@@ -94,7 +94,6 @@ FReply FStandaloneWindowPluginModule::LoadMap(const FString& mapName)
 TSharedRef<SDockTab> FStandaloneWindowPluginModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs)
 {
 	TArray<FString> mapNames = TArray<FString>();
-
 	if (UObjectLibrary* pObjectLibrary = UObjectLibrary::CreateLibrary(UWorld::StaticClass(), false, true))
 	{
 		pObjectLibrary->LoadAssetDataFromPath(TEXT("/Game/Levels"));
@@ -109,94 +108,59 @@ TSharedRef<SDockTab> FStandaloneWindowPluginModule::OnSpawnPluginTab(const FSpaw
 			mapNames.Add(name);
 		}
 	}
-
-	// Failsafe if we delete our maps
-	if (mapNames.Num() < 2)
+		
+	TSharedPtr<SVerticalBox> content = SNew(SVerticalBox);
+	for (size_t i = 0; i < mapNames.Num(); i++)
 	{
-		mapNames.Empty();
-		mapNames.Add("ThirdPersonExampleMap");
-		mapNames.Add("ThirdPersonExampleMap");
-	}
+		FText text = FText::Format(
+			LOCTEXT("WindowWidgetText", "{0}"),
+			FText::FromString(mapNames[i]));
 
-	FText WidgetTextA = FText::Format(
-		LOCTEXT("WindowWidgetText", "{0}"),
-		FText::FromString(mapNames[0])
-	);
-	FText WidgetTextB = FText::Format(
-		LOCTEXT("WindowWidgetText", "{0}"),
-		FText::FromString(mapNames[1])
-	);
+		FText tooltipText = FText::Format(
+			LOCTEXT("Load_Tooltip", "Begins loading into {0}"),
+			FText::FromString(mapNames[i])
+		);
 
-	return SNew(SDockTab)
-		.TabRole(ETabRole::NomadTab)
+		content->AddSlot()
 		[
-			// Put your tab content here!
-			SNew(SBox)
-			//.HAlign(HAlign_Fill)
-			//.VAlign(VAlign_Fill)
-			//.MinDesiredHeight(300.0f)
-			//.MaxDesiredHeight(400.0f)
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+			.AutoHeight()
 			[
-				SNew(SVerticalBox)
-				+SVerticalBox::Slot()
-				.AutoHeight()
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				.Padding(0, 10, 20, 10) // Left, Top, Right, Bottom
 				[
-					SNew(SHorizontalBox)
-					+ SHorizontalBox::Slot()
-					.AutoWidth()
-					.Padding(0, 10, 20, 10) // Left, Top, Right, Bottom
-					[
-						SNew(STextBlock)
-						.Text(WidgetTextA)
-					]
-					+ SHorizontalBox::Slot()
-					.Padding(0, 10, 0, 10) // Left, Top, Right, Bottom
-					[
-						SNew(SButton)
-						.VAlign(VAlign_Center)
-						.HAlign(HAlign_Center)
-						.Text(LOCTEXT("Load", "Load"))
-						.ToolTipText(LOCTEXT("Load_Tooltip", "Begins loading into Map A"))
-						// MUST CAPTURE BY VALUE for the mapNames to be valid otherwise they go out of scope and die
-						.OnClicked_Lambda([=]() 
-						{
-							return LoadMap(mapNames[0]);
-						})
-						//.OnClicked_Raw(this,&FStandaloneWindowPluginModule::LoadMapA)
-					]
+					SNew(STextBlock)
+					.Text(text)
 				]
-				+SVerticalBox::Slot()
-					.AutoHeight()
-				//.HAlign(HAlign_Center)
-				//.FillHeight(25.0f)
+				+ SHorizontalBox::Slot()
+				.Padding(0, 10, 0, 10) // Left, Top, Right, Bottom
 				[
-					SNew(SHorizontalBox)
-					+ SHorizontalBox::Slot()
-					.AutoWidth()
-					.Padding(0, 10, 20, 10) // Left, Top, Right, Bottom
-					[
-						SNew(STextBlock)
-						.Text(WidgetTextB)
-					]
-					+ SHorizontalBox::Slot()
-					.Padding(0, 10, 0, 10) // Left, Top, Right, Bottom
-					[
-						SNew(SButton)
-						.VAlign(VAlign_Center)
-						.HAlign(HAlign_Center)
-						.Text(LOCTEXT("Load", "Load"))
-						.ToolTipText(LOCTEXT("Load_Tooltip", "Begins loading into Map B"))
-						.OnClicked_Lambda([=]()
-						{
-							return LoadMap(mapNames[1]);
-						})
-						//.OnClicked_Raw(this, &FStandaloneWindowPluginModule::LoadMapB)
-						//SNew(SImage)
-						//.ColorAndOpacity(FLinearColor::Green)
-					]
+					SNew(SButton)
+					.VAlign(VAlign_Center)
+					.HAlign(HAlign_Center)
+					.Text(LOCTEXT("Load", "Load"))
+					.ToolTipText(tooltipText)
+					// MUST CAPTURE BY VALUE for the mapNames to be valid otherwise they go out of scope and die
+					.OnClicked_Lambda([=]()
+					{
+						return LoadMap(mapNames[i]);
+					})
 				]
 			]
 		];
+	}
+
+	TSharedRef<SDockTab> dockedTab
+		= SNew(SDockTab)
+		.TabRole(ETabRole::NomadTab)
+		[
+			content.ToSharedRef()
+		];
+
+	return dockedTab;
 }
 
 void FStandaloneWindowPluginModule::PluginButtonClicked()
