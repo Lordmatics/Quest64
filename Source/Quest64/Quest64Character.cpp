@@ -8,6 +8,8 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 
+#include "ActorComponents/StatsComponent.h"
+
 //////////////////////////////////////////////////////////////////////////
 // AQuest64Character
 
@@ -52,6 +54,13 @@ AQuest64Character::AQuest64Character()
 			m_pCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 		}
 	}
+
+	m_pStats = CreateDefaultSubobject<UStatsComponent>(TEXT("Stats"));
+	if (m_pStats)
+	{
+		// TODO: Perhaps pass in an xml file path so the component knows what to load from
+		// Stats loaded on BeginPlay internally ^
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -61,8 +70,8 @@ void AQuest64Character::SetupPlayerInputComponent(class UInputComponent* PlayerI
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AQuest64Character::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AQuest64Character::MoveRight);
@@ -73,6 +82,7 @@ void AQuest64Character::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AQuest64Character::LookUpAtRate);
 }
 
+#pragma region Player Control
 void AQuest64Character::TurnAtRate(float Rate)
 {
 	if (const UWorld* pWorld = GetWorld())
@@ -117,3 +127,31 @@ void AQuest64Character::MoveRight(float Value)
 		AddMovementInput(Direction, Value);
 	}
 }
+#pragma endregion
+
+#pragma region Stats
+const int AQuest64Character::GetCurrentHealth() const
+{
+	return m_pStats ? (int)m_pStats->GetCurrentHealth() : 9999;
+}
+const int AQuest64Character::GetMaxHealth() const
+{
+	return m_pStats ? (int)m_pStats->GetMaxHealth() : 9999;
+}
+const int AQuest64Character::GetCurrentMana() const
+{
+	return m_pStats ? (int)m_pStats->GetCurrentMana() : 9999;
+}
+const int AQuest64Character::GetMaxMana() const
+{
+	return m_pStats ? (int)m_pStats->GetMaxMana() : 9999;
+}
+const int AQuest64Character::GetDefense() const
+{
+	return m_pStats ? (int)m_pStats->GetDefense() : 9999;
+}
+const int AQuest64Character::GetEvasion() const
+{
+	return m_pStats ? (int)m_pStats->GetEvasion() : 9999;
+}
+#pragma endregion

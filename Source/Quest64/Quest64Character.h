@@ -20,6 +20,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* m_pCamera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Player, meta = (AllowPrivateAccess = "true"))
+	class UStatsComponent* m_pStats;
+
 	// PUBLIC PROPERTIES
 public:
 
@@ -34,6 +37,7 @@ public:
 	// PRIVATE FUNCTIONS
 private:
 
+#pragma region Player Control
 	void MoveForward(float Value);
 
 	void MoveRight(float Value);
@@ -41,10 +45,26 @@ private:
 	void TurnAtRate(float Rate);
 
 	void LookUpAtRate(float Rate);
+#pragma endregion
 
 	// PUBLIC FUNCTIONS
 public:
 	AQuest64Character();
+
+#pragma region Stats
+	UFUNCTION(BlueprintCallable)
+		const int GetCurrentHealth() const;
+	UFUNCTION(BlueprintCallable)
+		const int GetMaxHealth() const;
+	UFUNCTION(BlueprintCallable)
+		const int GetCurrentMana() const;
+	UFUNCTION(BlueprintCallable)
+		const int GetMaxMana() const;
+	UFUNCTION(BlueprintCallable)
+		const int GetDefense() const;
+	UFUNCTION(BlueprintCallable)
+		const int GetEvasion() const;
+#pragma endregion
 
 	// VIRTUALS
 protected:
@@ -52,9 +72,8 @@ protected:
 
 	// GETTERS & SETTERS
 public:
-	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetSpringArm() const { return m_pSpringArm; }
-	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetCamera() const { return m_pCamera; }
+	FORCEINLINE class UStatsComponent* GetStats() const { return m_pStats; }
 };
 
