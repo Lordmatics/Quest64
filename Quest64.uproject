@@ -14,5 +14,15 @@
 				"SlateCore"
 			]
 		}
+	],
+	"Plugins": [
+		{
+			"Name": "StandaloneWindowPlugin",
+			"Enabled": true
+		},
+		{
+			"Name": "ToolbarButtonPlugin",
+			"Enabled": false
+		}
 	]
 }
