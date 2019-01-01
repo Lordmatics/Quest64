@@ -8,14 +8,25 @@ public class Quest64 : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "NavigationSystem", "AIModule" });
+		PublicDependencyModuleNames.AddRange(new string[] {
+            "Core",
+            "CoreUObject",
+            "Engine",
+            "InputCore",
+            "NavigationSystem",
+            "AIModule"
+        });
 
         // Useful links
         // https://docs.unrealengine.com/en-us/Programming/Slate/InGameUI
         // https://docs.unrealengine.com/en-us/Programming/Slate/Overview
         // https://docs.unrealengine.com/en-us/Programming/Slate
         // https://wiki.unrealengine.com/Slate,_Hello
-        PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+        PrivateDependencyModuleNames.AddRange(new string[] {
+            "Slate",
+            "SlateCore",
+			"StandaloneWindowPlugin"
+        });
 
         // Uncomment if you are using online features
         // PrivateDependencyModuleNames.Add("OnlineSubsystem");

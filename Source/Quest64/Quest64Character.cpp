@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 
 #include "ActorComponents/StatsComponent.h"
+#include "Projectiles/BaseProjectile.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AQuest64Character
@@ -80,6 +81,8 @@ void AQuest64Character::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAxis("TurnRate", this, &AQuest64Character::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AQuest64Character::LookUpAtRate);
+
+	PlayerInputComponent->BindAction("WindCutter", IE_Pressed, this, &AQuest64Character::FireWindCutter );
 }
 
 #pragma region Player Control
@@ -125,6 +128,32 @@ void AQuest64Character::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+	}
+}
+#pragma endregion
+
+#pragma region Player Abilities
+void AQuest64Character::FireWindCutter()
+{
+	if (!m_windProjectileClass) return;
+
+	const FVector vSpawnPos(GetActorLocation() + FVector(0.0f, 100.0f, 100.0f)); // Hard coded for now // forward / side / above
+	const FRotator vSpawnRot(GetActorRotation());
+	if (UWorld* const pWorld = GetWorld())
+	{
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner = this;
+		spawnParams.Instigator = Instigator;
+		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+		if (ABaseProjectile* pProj = pWorld->SpawnActor<ABaseProjectile>(m_windProjectileClass, vSpawnPos, vSpawnRot, spawnParams))
+		{
+			// Done
+			const FVector vFoward(GetActorForwardVector() * 250.0f);
+			const FVector vUp(GetActorUpVector() * 50.0f);
+			// TODO: Handle repeating this function with varying launch offsets - pass in ability level / or missile index
+			const FVector vTarget(GetActorLocation() + vFoward + vUp);
+			pProj->SetTargetHitPosition(vTarget); // Called after begin play for the projectile
+		}
 	}
 }
 #pragma endregion

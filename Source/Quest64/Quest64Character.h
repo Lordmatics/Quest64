@@ -23,6 +23,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Player, meta = (AllowPrivateAccess = "true"))
 	class UStatsComponent* m_pStats;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Player, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class ABaseProjectile> m_windProjectileClass;
+
 	// PUBLIC PROPERTIES
 public:
 
@@ -47,6 +50,12 @@ private:
 	void LookUpAtRate(float Rate);
 #pragma endregion
 
+#pragma region Player Abilities
+
+	UFUNCTION()
+	void FireWindCutter();
+
+#pragma endregion
 	// PUBLIC FUNCTIONS
 public:
 	AQuest64Character();

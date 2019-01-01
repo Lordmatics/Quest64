@@ -42,6 +42,7 @@ public class StandaloneWindowPlugin : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"Quest64"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
